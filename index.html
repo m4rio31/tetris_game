@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div class="grid">
+    <canvas id="board" class="board-game"></canvas>
+    <div class="info-game">
+      <div>
+        <h1>TETRIS</h1>
+        <p>Score: <span class="score">0</span></p>
+        <p>Lines: <span class="lines">0</span></p>
+        <p>Level: <span class="level">0</span></p>
+        <canvas id="next-piece" class="next"></canvas>
+      </div>
+      <button onclick="play()" class="play-button">PLAY</button>
+    </div>
+  </div>
+  <script type="text/javascript" src="constants.js"></script>
+  <script type="text/javascript" src="main.js"></script>
+</body>
+</html>
