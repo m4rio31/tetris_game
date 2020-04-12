@@ -50,3 +50,5 @@ function movements(evt) {
     dropStart = Date.now()
   }
 }
+
+// ********** Collisions ***********

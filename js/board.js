@@ -9,4 +9,12 @@ class Board {
     EmptyBoard() {
 	     return Array.from({length: ROWS}, () => Array(COLS).fill(0));
     }
+
+    outsideWalls(x) {
+      return x < 0 || x >= COLS;
+    }
+
+    underFloor(y) {
+      return y > ROWS;
+    }
 }
