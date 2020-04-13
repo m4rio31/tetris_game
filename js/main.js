@@ -8,23 +8,34 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 // ************ Scale blocks **************
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
+// ********** Random generator ***********
+function randomPiece() {
+  let r = randomN = Math.floor(Math.floor(Math.random() * PIECES.length));
+  return new Piece(ctx, r);
+}
 
 let board = new Board();
-let piece = new Piece(ctx);
+let piece = randomPiece();
+
+
 function play() {
     board.EmptyBoard();
     piece.draw();
     drop();
-    //board.piece = piece;
 }
 
+// *********** Dropping *************
 let dropStart = Date.now();
 function drop() {
-  let now = Date.now();
-  let delta = now - dropStart;
-  if (delta > 500){
-    piece.moveDown();
-    dropStart = Date.now()
+  if (!piece.collision(0, 1, piece.tetromino)) {
+    let now = Date.now();
+    let delta = now - dropStart;
+    if (delta > 500){
+      piece.moveDown();
+      dropStart = Date.now();
+    }
+  } else {
+    piece = randomPiece();
   }
   requestAnimationFrame(drop);
 }
@@ -34,21 +45,27 @@ document.addEventListener('keydown', movements)
 
 function movements(evt) {
   if (evt.keyCode == KEY.LEFT) {
-    piece.moveLeft();
-    dropStart = Date.now()
+    if(!piece.collision(-1, 0, piece.tetromino)) {
+      piece.moveLeft();
+      dropStart = Date.now();
+    }
   }
   else if (evt.keyCode == KEY.UP) {
     piece.rotate();
     dropStart = Date.now()
   }
   else if (evt.keyCode == KEY.RIGHT) {
-    piece.moveRight();
-    dropStart = Date.now()
+    if(!piece.collision(1, 0, piece.tetromino)) {
+      piece.moveRight();
+      dropStart = Date.now();
+    }
   }
   else if (evt.keyCode == KEY.DOWN) {
-    piece.moveDown();
-    dropStart = Date.now()
+    if(!piece.collision(0, 1, piece.tetromino)) {
+      piece.moveDown();
+      dropStart = Date.now();
+    } else {
+      piece = randomPiece();
+    }
   }
 }
-
-// ********** Collisions ***********

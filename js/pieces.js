@@ -6,9 +6,9 @@ class Piece {
     shape;
     ctx;
 
-    constructor(ctx) {
+    constructor(ctx, r) {
 	     this.ctx = ctx;
-	     this.spawn(PIECES[4][0], PIECES[4][1]);
+	     this.spawn(PIECES[r][0], PIECES[r][1]);
     }
 
     spawn(piece, color) {
@@ -42,27 +42,21 @@ class Piece {
     }
 
     moveDown() {
-      if(!this.collision(0, 1, this.tetromino)) {
-        this.delete();
-        this.y++;
-        this.draw();
-      }
+      this.delete();
+      this.y++;
+      this.draw();
     }
 
     moveLeft() {
-      if(!this.collision(-1, 0, this.tetromino)) {
-        this.delete();
-        this.x--;
-        this.draw();
-      }
+      this.delete();
+      this.x--;
+      this.draw();
     }
 
     moveRight() {
-      if(!this.collision(1, 0, this.tetromino)) {
-        this.delete();
-        this.x++;
-        this.draw();
-      }
+      this.delete();
+      this.x++;
+      this.draw();
     }
 
     rotate() {  // FIX FLOOR COLLISIONS
@@ -100,6 +94,7 @@ class Piece {
           if (!piece[r][c]) {
             continue;
           }
+
           let newX = this.x + c + x;
           let newY = this.y + c + y;
 
