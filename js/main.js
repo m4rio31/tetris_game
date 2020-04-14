@@ -17,9 +17,10 @@ function randomPiece() {
 let board = new Board();
 let piece = randomPiece();
 
-
+// ************* Play button interaction *********
 function play() {
     board.EmptyBoard();
+    //console.table(board.grid);
     piece.draw();
     drop();
 }
@@ -27,7 +28,7 @@ function play() {
 // *********** Dropping *************
 let dropStart = Date.now();
 function drop() {
-  if (!piece.collision(0, 1, piece.tetromino)) {
+  if (!collision(0, 1, piece.tetromino)) {
     let now = Date.now();
     let delta = now - dropStart;
     if (delta > 500){
@@ -35,6 +36,7 @@ function drop() {
       dropStart = Date.now();
     }
   } else {
+    //lock(piece);
     piece = randomPiece();
   }
   requestAnimationFrame(drop);
@@ -45,27 +47,80 @@ document.addEventListener('keydown', movements)
 
 function movements(evt) {
   if (evt.keyCode == KEY.LEFT) {
-    if(!piece.collision(-1, 0, piece.tetromino)) {
+    if (!collision(-1, 0, piece.tetromino)) {
       piece.moveLeft();
       dropStart = Date.now();
     }
   }
   else if (evt.keyCode == KEY.UP) {
-    piece.rotate();
-    dropStart = Date.now()
+    let nextPattern = piece.shape[(piece.tetrominoN+1)%piece.shape.length]
+    let kickX = 0;
+    let kickY = 0;
+
+    if (collision(0, 0, nextPattern)) {
+        if (piece.x > COLS/2) { // Right wall
+            kickX = -1;
+        } else { // Left wall
+            kickX = 1; // we need to move the piece to the right
+        }
+        if (piece.y > ROWS/2) {
+          kickY = 1;
+        }
+      }
+    if (!collision(kickX, kickY, nextPattern)) {
+      piece.rotate(kickX, kickY);
+      dropStart = Date.now()
+    }
   }
   else if (evt.keyCode == KEY.RIGHT) {
-    if(!piece.collision(1, 0, piece.tetromino)) {
+    if (!collision(1, 0, piece.tetromino)) {
       piece.moveRight();
       dropStart = Date.now();
     }
   }
   else if (evt.keyCode == KEY.DOWN) {
-    if(!piece.collision(0, 1, piece.tetromino)) {
+    if (!collision(0, 1, piece.tetromino)) {
       piece.moveDown();
       dropStart = Date.now();
     } else {
       piece = randomPiece();
+    }
+  }
+}
+
+function collision(x, y, selectedPiece) {
+  for (var r = 0; r < selectedPiece.length; r++) {
+    for (var c = 0; c < selectedPiece.length; c++) {
+      if (!selectedPiece[r][c]) {
+        continue;
+      }
+
+      let newX = piece.x + c + x;
+      let newY = piece.y + r + y;
+
+      if (board.outsideWalls(newX) || board.underFloor(newY)) {
+        return true;
+      }
+      if (newY < 0) {
+        continue;
+      }
+    }
+  }
+  return false;
+}
+
+function lock(piece) {
+  for (var r = 0; r < piece.tetromino.length; r++) {
+    for (var c = 0; c < piece.tetromino.length; c++) {
+      if (!piece.tetromino[r][c]) {
+        continue;
+      }
+      if (piece.y + c < 0) {
+        alert("Game Over");
+        //gameOver = true;
+        break;
+      }
+      board.grid[piece.y + c][piece.y + c] = piece.color;
     }
   }
 }

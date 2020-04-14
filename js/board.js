@@ -7,7 +7,13 @@ class Board {
 
 // *********** Return a matrix of the canvas dimensions, filled with zeros************
     EmptyBoard() {
-	     return Array.from({length: ROWS}, () => Array(COLS).fill(0));
+	    for (var r = 0; r < ROWS; r++) {
+        board[r] = [];
+        for (var c = 0; c < COLS; c++) {
+          board[r][c] = BKG_COLOR;
+        }
+      }
+      return board;
     }
 
     outsideWalls(x) {
@@ -15,6 +21,6 @@ class Board {
     }
 
     underFloor(y) {
-      return y > ROWS;
+      return y >= ROWS;
     }
 }
