@@ -59,7 +59,7 @@ class Piece {
       this.draw();
     }
 
-    rotate(kickX, kickY) {  // FIX FLOOR
+    rotate(kickX, kickY) {
       this.delete();
       this.x += kickX;
       this.y += kickY;

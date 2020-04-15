@@ -20,26 +20,29 @@ let piece = randomPiece();
 // ************* Play button interaction *********
 function play() {
     board.EmptyBoard();
-    //console.table(board.grid);
+    console.table(board.grid);
     piece.draw();
     drop();
 }
 
 // *********** Dropping *************
 let dropStart = Date.now();
+let gameOver = false;
 function drop() {
-  if (!collision(0, 1, piece.tetromino)) {
-    let now = Date.now();
-    let delta = now - dropStart;
-    if (delta > 500){
+  let now = Date.now();
+  let delta = now - dropStart;
+  if (delta > 500){
+    if (!collision(0, 1, piece.tetromino)) {
       piece.moveDown();
       dropStart = Date.now();
+    } else {
+      lock(piece);
+      piece = randomPiece();
     }
-  } else {
-    //lock(piece);
-    piece = randomPiece();
   }
-  requestAnimationFrame(drop);
+  if (!gameOver){
+    requestAnimationFrame(drop);
+  }
 }
 
 // ******* Declare movements for the piece ********
@@ -61,7 +64,7 @@ function movements(evt) {
         if (piece.x > COLS/2) { // Right wall
             kickX = -1;
         } else { // Left wall
-            kickX = 1; // we need to move the piece to the right
+            kickX = 1;
         }
         if (piece.y > ROWS/2) {
           kickY = 1;
@@ -83,6 +86,7 @@ function movements(evt) {
       piece.moveDown();
       dropStart = Date.now();
     } else {
+      lock(piece);
       piece = randomPiece();
     }
   }
@@ -104,6 +108,9 @@ function collision(x, y, selectedPiece) {
       if (newY < 0) {
         continue;
       }
+      if (board.grid[newY][newX] != BKG_COLOR) {
+        return true;
+      }
     }
   }
   return false;
@@ -115,12 +122,12 @@ function lock(piece) {
       if (!piece.tetromino[r][c]) {
         continue;
       }
-      if (piece.y + c < 0) {
+      if (piece.y + r < 0) {
         alert("Game Over");
-        //gameOver = true;
+        gameOver = true;
         break;
       }
-      board.grid[piece.y + c][piece.y + c] = piece.color;
+      board[piece.y + r][piece.x + c] = piece.color;
     }
   }
 }

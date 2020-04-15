@@ -2,7 +2,7 @@ class Board {
     grid;
 
     reset() {
-	     this.grid = this.EmptyBoard();
+	     this.EmptyBoard();
     }
 
 // *********** Return a matrix of the canvas dimensions, filled with zeros************
@@ -13,7 +13,7 @@ class Board {
           board[r][c] = BKG_COLOR;
         }
       }
-      return board;
+      return this.grid = board;
     }
 
     outsideWalls(x) {
