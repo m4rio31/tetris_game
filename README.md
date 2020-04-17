@@ -5,7 +5,7 @@
   <link rel="stylesheet" type="text/css" href="README_style.css">
 </head>
 <body>
-  <p><h1>TETRIS</h1></p>
+  <p><font size="+3">TETRIS</font></p>
 Tetris game implemented in JavaScript
 </body>
 </html>
