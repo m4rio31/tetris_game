@@ -1,5 +1,7 @@
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
+const canvasNext = document.getElementById('next-piece');
+const ctxNext = canvasNext.getContext('2d');
 
 let accountValues = {
   score: 0,
@@ -22,6 +24,23 @@ let account = new Proxy(accountValues, {
   }
 });
 
+let requestId;
+
+let boardNext = new Board(ctxNext);
+
+initNext();
+
+function initNext() {
+  // Calculate size of canvas from constants.
+  ctxNext.canvas.width = 7 * BLOCK_SIZE;
+  ctxNext.canvas.height = 4 * BLOCK_SIZE;
+  ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
+}
+
+function getNextPiece() {
+  nextPiece = new Piece(ctxNext);
+  nextPiece.draw();
+}
 
 // ********** Random generator ***********
 function randomPiece() {
@@ -35,19 +54,20 @@ let board = new Board(ctx);
 function play() { // FIX RESET BUTTON
     board.reset();
     piece = board.piece;
+    getNextPiece();
     addEventListener();
-    console.table(board.grid);
+    //console.table(board.grid);
     drop();
 }
 
 
 // *********** Dropping *************
 let dropStart = Date.now();
-let gameOver = false;
+let gameOverAlert = false;
 function drop() {
   let now = Date.now();
   let delta = now - dropStart;
-  if (delta > 500){
+  if (delta > LEVEL[account.level]){
     if (!collision(0, 1, piece.tetromino)) {
       piece.moveDown();
       dropStart = Date.now();
@@ -56,8 +76,8 @@ function drop() {
       piece = new Piece(ctx);
     }
   }
-  if (!gameOver){
-    requestAnimationFrame(drop);
+  if (!gameOverAlert){
+    requestId = requestAnimationFrame(drop);
   }
 }
 
@@ -65,6 +85,12 @@ function drop() {
 function addEventListener() {
   document.addEventListener('keydown', movements)
   function movements(evt) {
+    evt.preventDefault();
+
+    if (evt.keyCode == KEY.SPACEBAR) {
+      pause();
+    }
+
     if (evt.keyCode == KEY.LEFT) {
       if (!collision(-1, 0, piece.tetromino)) {
         piece.moveLeft();
@@ -104,7 +130,7 @@ function addEventListener() {
         dropStart = Date.now();
       } else {
         lock(piece);
-        piece = randomPiece();
+        piece = new Piece(ctx);
       }
     }
   }
@@ -135,16 +161,18 @@ function collision(x, y, selectedPiece) {
 }
 
 let score = 0;
-let lines = 0;
+
 function lock(piece) {
+  let lines = 0;
   for (var r = 0; r < piece.tetromino.length; r++) {
     for (var c = 0; c < piece.tetromino.length; c++) {
       if (!piece.tetromino[r][c]) {
         continue;
       }
       if (piece.y + r < 0) {
-        alert("Game Over");
-        gameOver = true;
+        //alert("Game Over");
+        gameOver();
+        gameOverAlert = true;
         break;
       }
       board.grid[piece.y + r][piece.x + c] = piece.color;
@@ -152,9 +180,7 @@ function lock(piece) {
   }
   for (var r = 0; r < ROWS; r++) {
     let isRowFull = board.grid[r].every(elem => elem != 0);
-    console.table(isRowFull);
     if (isRowFull) {
-      console.table(isRowFull);
       for ( var y = r; y > 1; y--) {
         for (var c = 0; c < COLS; c++) {
           board.grid[y][c] = board.grid[y-1][c];
@@ -164,14 +190,59 @@ function lock(piece) {
         board.grid[0][c] = 0;
       }
       lines++;
-      if (lines > 0) {
-        account.lines = lines;
-
-      }
-      score += 10;
-      console.table(board.grid)
+      //console.table(board.grid)
       board.drawBoard();
     }
-    console.table(lines);
+    //console.table(lines);
   }
+  if (lines > 0) {
+    console.table(lines);
+    account.lines += lines;
+    pointsPerLines(lines);
+    if (account.lines == LINES_PER_LEVEL) {
+      account.lines = 0;
+      account.level++;
+    }
+  }
+}
+
+function pointsPerLines(lines) {
+  if (lines == 1) {
+    account.score += POINTS.SINGLE;
+  }
+  if (lines == 2) {
+    account.score += POINTS.DOUBLE;
+  }
+  if (lines == 3) {
+    account.score += POINTS.TRIPLE;
+  }
+  if (lines == 4) {
+    account.score += POINTS.TETRIS;
+  }
+}
+
+function gameOver() {
+  cancelAnimationFrame(requestId);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(1, 3, 8, 1.2);
+  ctx.font = '1px Arial';
+  ctx.fillStyle = 'red';
+  ctx.fillText('GAME OVER', 1.8, 4);
+}
+
+function pause() {
+  if (!requestId) {
+    ctx.clearRect(1, 3, 8, 1.2);
+    board.drawBoard();
+    drop();
+    return;
+  }
+
+  cancelAnimationFrame(requestId)
+  requestId = null;
+  ctx.fillStyle = 'black';
+  ctx.fillRect(1, 3, 8, 1.2);
+  ctx.font = '1px Arial';
+  ctx.fillStyle = 'yellow';
+  ctx.fillText('PAUSED', 3, 4);
 }
