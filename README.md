@@ -5,7 +5,7 @@
   <link rel="stylesheet" type="text/css" href="README_style.css">
 </head>
 <body>
-  <p><font size="+3">TETRIS</font></p>
+  <p><font style="font-family: 'Press Start 2P', cursive;">TETRIS</font></p>
 Tetris game implemented in JavaScript
 </body>
 </html>
