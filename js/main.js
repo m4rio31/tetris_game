@@ -7,6 +7,22 @@ let accountValues = {
   lines: 0
 }
 
+function updateAccount(key, value) {
+  let element = document.getElementById(key);
+  if (element) {
+    element.textContent = value;
+  }
+}
+
+let account = new Proxy(accountValues, {
+  set: (target, key, value) => {
+    target[key] = value;
+    updateAccount(key, value);
+    return true;
+  }
+});
+
+
 // ********** Random generator ***********
 function randomPiece() {
   let r = randomN = Math.floor(Math.floor(Math.random() * PIECES.length));
@@ -84,6 +100,7 @@ function addEventListener() {
     else if (evt.keyCode == KEY.DOWN) {
       if (!collision(0, 1, piece.tetromino)) {
         piece.moveDown();
+        account.score++;
         dropStart = Date.now();
       } else {
         lock(piece);
@@ -118,6 +135,7 @@ function collision(x, y, selectedPiece) {
 }
 
 let score = 0;
+let lines = 0;
 function lock(piece) {
   for (var r = 0; r < piece.tetromino.length; r++) {
     for (var c = 0; c < piece.tetromino.length; c++) {
@@ -145,10 +163,15 @@ function lock(piece) {
       for (c = 0; c < COLS; c++) {
         board.grid[0][c] = 0;
       }
+      lines++;
+      if (lines > 0) {
+        account.lines = lines;
+
+      }
       score += 10;
       console.table(board.grid)
       board.drawBoard();
     }
-    //console.table(board.grid);
+    console.table(lines);
   }
 }
