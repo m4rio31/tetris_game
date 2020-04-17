@@ -3,6 +3,8 @@ const ctx = canvas.getContext('2d');
 const canvasNext = document.getElementById('next-piece');
 const ctxNext = canvasNext.getContext('2d');
 
+var sound = document.getElementById('sound');
+
 let accountValues = {
   score: 0,
   level: 0,
@@ -52,6 +54,7 @@ let board = new Board(ctx);
 
 // ************* Play button interaction *********
 function play() { // FIX RESET BUTTON
+    sound.play();
     board.reset();
     piece = board.piece;
     getNextPiece();
@@ -223,6 +226,7 @@ function pointsPerLines(lines) {
 
 function gameOver() {
   cancelAnimationFrame(requestId);
+  sound.pause();
   ctx.fillStyle = 'black';
   ctx.fillRect(1, 3, 8, 1.2);
   ctx.font = '1px Arial';
@@ -234,11 +238,13 @@ function pause() {
   if (!requestId) {
     ctx.clearRect(1, 3, 8, 1.2);
     board.drawBoard();
+    sound.play();
     drop();
     return;
   }
 
   cancelAnimationFrame(requestId)
+  sound.pause()
   requestId = null;
   ctx.fillStyle = 'black';
   ctx.fillRect(1, 3, 8, 1.2);
