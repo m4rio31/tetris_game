@@ -6,9 +6,10 @@ class Piece {
     shape;
     ctx;
 
-    constructor(ctx, index) {
+    constructor(ctx) {
 	     this.ctx = ctx;
-	     this.spawn(PIECES[index][0], PIECES[index][1]);
+       let random = Math.floor(Math.floor(Math.random() * PIECES.length));
+	     this.spawn(PIECES[random][0], PIECES[random][1]);
     }
 
     spawn(piece, color) {
@@ -26,7 +27,7 @@ class Piece {
 	     this.ctx.fillStyle = color;
 	     this.tetromino.forEach((row, y) => {
 	        row.forEach((value, x) => {
-		          if (value > 0) {
+		          if (value) {
 		              this.ctx.fillRect(this.x + x, this.y + y, 1, 1);
 		          }
 	        });

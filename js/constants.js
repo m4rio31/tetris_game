@@ -1,7 +1,8 @@
 const COLS = 10;
 const ROWS = 20;
+const BKG_COLOR =  "rgb(228,228,228)"; // Color of an empty square
+const EMPTY_SQUARE = 0;
 const BLOCK_SIZE = 30;
-const BKG_COLOR = "rgb(228,228,228)"; // Color of an empty square
 
 const PIECES = [
   [Z, "red"],

@@ -1,19 +1,47 @@
 class Board {
-    grid;
 
-    reset() {
-	     this.EmptyBoard();
+    ctx;
+    grid;
+    piece;
+
+    constructor(ctx) {
+      this.ctx = ctx;
+      this.init();
     }
 
-// *********** Return a matrix of the canvas dimensions, filled with zeros************
+    init() {
+      this.ctx.canvas.width = COLS * BLOCK_SIZE;
+      this.ctx.canvas.height = ROWS * BLOCK_SIZE;
+
+      this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
+    }
+
+    reset() {
+	     this.grid = this.EmptyBoard();
+       this.piece = new Piece(this.ctx);
+    }
+
+    drawBoard() {
+      this.grid.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value != 0) {
+            this.ctx.fillStyle = value;
+          } else if (value == 0) {
+            this.ctx.fillStyle = BKG_COLOR;
+          }
+          this.ctx.fillRect(x, y, 1, 1);
+        });
+      });
+    }
+
+    draw() {
+      this.piece.draw();
+      this.drawBoard();
+    }
+
+
     EmptyBoard() {
-	    for (var r = 0; r < ROWS; r++) {
-        board[r] = [];
-        for (var c = 0; c < COLS; c++) {
-          board[r][c] = BKG_COLOR;
-        }
-      }
-      return this.grid = board;
+      return Array.from({ length: ROWS }, () => Array(COLS).fill(EMPTY_SQUARE));
     }
 
     outsideWalls(x) {
